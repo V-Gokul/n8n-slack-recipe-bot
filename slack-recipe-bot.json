@@ -1,0 +1,192 @@
+{
+  "name": "Slack Recipe Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": [
+          "message"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C0BP80RBCMD",
+          "mode": "list",
+          "cachedResultName": "receipeee"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a282dbcb-baf9-42d6-aae7-43eecde0f7ea",
+      "name": "Slack Trigger",
+      "webhookId": "06b8c56c-ff47-4d67-997d-3be065a4ae1f",
+      "credentials": {
+        "slackApi": {
+          "id": "UIVGVHfv10zSUJxZ",
+          "name": "Recipe Bot - Slack"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=List all the products and ingredients needed to make {{ $json.recipe }}.\nReturn a clear bulleted list with approximate quantities.\nKeep it short and practical. If the recipe name is unclear,\nask the user to rephrase it.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        448,
+        16
+      ],
+      "id": "bc5d1d7d-111f-4824-81cc-1cedbe8f8f0b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        224
+      ],
+      "id": "1cdd9725-5b51-4f5d-9cdc-aac7339ef5dc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "yo9JYy8GjqxfEtH9",
+          "name": "Gen Ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0d3d101a-d166-4b07-9b00-d6df434ac728",
+              "name": "recipe",
+              "value": "={{ $json.text }} ",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e6504fa7-07cd-4901-ae83-c4a3aeb390fa",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BP80RBCMD",
+          "mode": "list",
+          "cachedResultName": "receipeee"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        816,
+        16
+      ],
+      "id": "6e6e7d37-2531-4900-9357-2fc25aea3e25",
+      "name": "Send a message",
+      "webhookId": "4c26eaf3-0d63-466e-a161-59893913c60b",
+      "credentials": {
+        "slackApi": {
+          "id": "UIVGVHfv10zSUJxZ",
+          "name": "Recipe Bot - Slack"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "737ec5ab-07b6-42e5-8463-f08d2f681a58",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "59be2609962945040bceb6b573b2b332e24b0627faf69b0677957e67dbdad370"
+  },
+  "nodeGroups": [],
+  "id": "xENhS6lkiuNahehu",
+  "tags": []
+}
